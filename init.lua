@@ -17,14 +17,24 @@ require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'gpanders/editorconfig.nvim'
   use 'chip/vim-fat-finger'
+  use 'tpope/vim-eunuch'
   use 'tpope/vim-repeat'
   use 'tpope/vim-unimpaired'
   use 'tpope/vim-fugitive' -- Git commands in nvim
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary' -- "gc" to comment visual regions/lines
-  use 'ludovicchabant/vim-gutentags' -- Automatic tags management
+  -- use 'ludovicchabant/vim-gutentags' 
+  -- Automatic tags management
+  use 'liuchengxu/vista.vim'
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
+  use {
+  "nvim-telescope/telescope-frecency.nvim",
+	  config = function()
+	    require"telescope".load_extension("frecency")
+	  end,
+     requires = {"tami5/sqlite.lua"}
+  }
   use 'pgdouyon/vim-yin-yang'
   -- If you are using Packer
   use 'ishan9299/modus-theme-vim'
@@ -196,6 +206,9 @@ vim.o.termguicolors = true
 vim.cmd [[
 set background = "light"
 colorscheme yang
+
+hi clear CursorLineNr     
+hi CursorLineNr gui=bold
 ]]
 
 vim.g.lightline = {
@@ -282,17 +295,18 @@ vim.api.nvim_set_keymap('n', '<leader>h', [[<cmd>lua require('telescope.builtin'
 vim.api.nvim_set_keymap('n', '<leader>ct', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>*', [[<cmd>lua require('telescope.builtin').grep_string(require('telescope.themes').get_dropdown({ previewer = false, search = vim.fn.expand("<cword>")}))<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep(require('telescope.themes').get_dropdown({ previewer = false, cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1] }))<CR>]], { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<CR>]], { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>Vista!!<CR>]], { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
 
 vim.cmd [[
-nnoremap <leader>bd <cmd>Bdelete<cr>
+nnoremap <leader>bd :bd
 nnoremap <leader>; <cmd>Telescope commands theme=dropdown<cr>
 nnoremap <leader>pp <cmd>Telescope repo list theme=dropdown<cr>
 nnoremap <leader>op <cmd>NvimTreeToggle<cr>
 nnoremap <leader>ot <cmd>Ttoggle<cr>
 nnoremap <leader>ctt <cmd>Ultest<cr>
+nnoremap <leader>cf <cmd>Format<cr>
 nnoremap ]t <Plug>(ultest-next-fail)
 nnoremap [t <Plug>(ultest-prev-fail)
 nnoremap <leader>gm <cmd>Neogit kind=vsplit<cr>
@@ -304,6 +318,12 @@ nnoremap <leader>wj <C-W><C-j>
 nnoremap <leader>wk <C-W><C-k>
 nnoremap <leader>wh <C-W><C-h>
 nnoremap <leader>wl <C-W><C-l>
+nmap <leader>gb :Git blame<CR>
+
+inoremap <leader>wh <C-\><C-N><C-w>h
+inoremap <leader>wj <C-\><C-N><C-w>j
+inoremap <leader>wk <C-\><C-N><C-w>k
+inoremap <leader>wl <C-\><C-N><C-w>l
 nnoremap <leader>ws <C-W>s
 nnoremap <leader>wv <C-W>v
 nnoremap <leader>cx <cmd>TroubleToggle<cr>
@@ -588,4 +608,9 @@ augroup VimReload
     autocmd!
     autocmd BufWritePost  $MYVIMRC  source $MYVIMRC
 augroup END
+
+au FileType help wincmd L
 ]]
+
+-- Tags
+vim.g.vista_default_executive = 'nvim_lsp'
