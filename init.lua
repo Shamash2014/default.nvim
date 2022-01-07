@@ -16,6 +16,15 @@ local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
   use 'gpanders/editorconfig.nvim'
+  use 'Chiel92/vim-autoformat'
+  use {
+  'lewis6991/spaceless.nvim',
+	config = function()
+	  require'spaceless'.setup()
+	end
+  }
+
+  use 'Yggdroot/indentLine'
   use 'chip/vim-fat-finger'
   use 'tpope/vim-eunuch'
   use 'tpope/vim-repeat'
@@ -23,7 +32,7 @@ require('packer').startup(function()
   use 'tpope/vim-fugitive' -- Git commands in nvim
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary' -- "gc" to comment visual regions/lines
-  -- use 'ludovicchabant/vim-gutentags' 
+  -- use 'ludovicchabant/vim-gutentags'
   -- Automatic tags management
   use 'liuchengxu/vista.vim'
   -- UI to select things (files, grep results, open buffers...)
@@ -38,6 +47,13 @@ require('packer').startup(function()
   use 'pgdouyon/vim-yin-yang'
   -- If you are using Packer
   use 'ishan9299/modus-theme-vim'
+  use {
+    "mcchrish/zenbones.nvim",
+    -- Optionally install Lush. Allows for more configuration or extending the colorscheme
+    -- If you don't want to install lush, make sure to set g:zenbones_compat = 1
+    -- In Vim, compat mode is turned on as Lush only works in Neovim.
+    requires = "rktjmp/lush.nvim"
+    }
   use 'folke/lsp-colors.nvim'
   use 'mg979/vim-visual-multi'
   use 'norcalli/nvim-colorizer.lua'
@@ -120,7 +136,7 @@ require('packer').startup(function()
   -- Add git related info in the signs columns and popups
   use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
   use { 'TimUntersberger/neogit', requires = {
-	  'nvim-lua/plenary.nvim', 
+	  'nvim-lua/plenary.nvim',
          'sindrets/diffview.nvim' }
   }
   -- Highlight, edit, and navigate code using a fast incremental parsing library
@@ -183,6 +199,7 @@ vim.o.hlsearch = false
 
 --Make line numbers default
 vim.wo.number = true
+vim.wo.relativenumber = true
 
 --Enable mouse mode
 -- vim.o.mouse = 'a'
@@ -204,10 +221,10 @@ vim.wo.signcolumn = 'yes'
 --Set colorscheme (order is important here)
 vim.o.termguicolors = true
 vim.cmd [[
-set background = "light"
-colorscheme yang
+set background=light
+colorscheme zenbones
 
-hi clear CursorLineNr     
+hi clear CursorLineNr
 hi CursorLineNr gui=bold
 ]]
 
@@ -300,7 +317,7 @@ vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>Vista!!<CR>]], { noremap = tru
 vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
 
 vim.cmd [[
-nnoremap <leader>bd :bd
+nnoremap <leader>bd :bd<cr>
 nnoremap <leader>; <cmd>Telescope commands theme=dropdown<cr>
 nnoremap <leader>pp <cmd>Telescope repo list theme=dropdown<cr>
 nnoremap <leader>op <cmd>NvimTreeToggle<cr>
@@ -318,7 +335,7 @@ nnoremap <leader>wj <C-W><C-j>
 nnoremap <leader>wk <C-W><C-k>
 nnoremap <leader>wh <C-W><C-h>
 nnoremap <leader>wl <C-W><C-l>
-nmap <leader>gb :Git blame<CR>
+nmap <leader>gb <cmd>Git blame<CR>
 
 inoremap <leader>wh <C-\><C-N><C-w>h
 inoremap <leader>wj <C-\><C-N><C-w>j
@@ -342,15 +359,15 @@ neogit.setup {
     -- The diffview integration enables the diff popup, which is a wrapper around `sindrets/diffview.nvim`.
     --
     -- Requires you to have `sindrets/diffview.nvim` installed.
-    -- use { 
-    --   'TimUntersberger/neogit', 
-    --   requires = { 
+    -- use {
+    --   'TimUntersberger/neogit',
+    --   requires = {
     --     'nvim-lua/plenary.nvim',
-    --     'sindrets/diffview.nvim' 
+    --     'sindrets/diffview.nvim'
     --   }
     -- }
     --
-    diffview = true  
+    diffview = true
   },
 }
 
@@ -481,7 +498,7 @@ lsp_installer.on_server_ready(function(server)
 	    }
     end
 
-    if server.name == "sumneko_lua" then 
+    if server.name == "sumneko_lua" then
       opts.settings = {
 	    Lua = {
 	      diagnostics = {
@@ -589,11 +606,11 @@ vim.cmd [[autocmd InsertLeave * execute 'normal! mI']]
 
 vim.g.VM_Maps = {}
 
-vim.g.VM_Maps['Find Under'] = 'n'           
+vim.g.VM_Maps['Find Under'] = 'n'
 -- vim.g.VM_Maps['Find Subword Under'] = 'd'
 vim.g.VM_leader = "gz"
 
--- Terminal 
+-- Terminal
 vim.g.neoterm_default_mod='belowright' -- open terminal in bottom split
 vim.g.neoterm_size=16 -- terminal split size
 vim.g.neoterm_autoscroll=1  --scroll to the bottom when running a command
@@ -612,5 +629,9 @@ augroup END
 au FileType help wincmd L
 ]]
 
+-- Autoformat
+-- vim.cmd [[
+-- au BufWrite * :Autoformat
+-- ]]
 -- Tags
 vim.g.vista_default_executive = 'nvim_lsp'
