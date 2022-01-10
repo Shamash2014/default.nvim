@@ -15,20 +15,31 @@ vim.cmd [[
 local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
+  use {'nathom/filetype.nvim'}
   use 'gpanders/editorconfig.nvim'
-  use 'Chiel92/vim-autoformat'
+  use {"akinsho/toggleterm.nvim"}
+  use 'jose-elias-alvarez/null-ls.nvim'
+  use {
+      "mbbill/undotree",
+      config = function()
+        vim.cmd [[nnoremap <leader>gu :UndotreeShow<CR>]]
+      end,
+      keys = "<leader>gu",
+  }
   use {
   'lewis6991/spaceless.nvim',
 	config = function()
 	  require'spaceless'.setup()
 	end
   }
-
+  use 'JoosepAlviste/nvim-ts-context-commentstring'
   use 'Yggdroot/indentLine'
+    use {'mattn/emmet-vim'}
   use 'chip/vim-fat-finger'
   use 'tpope/vim-eunuch'
   use 'tpope/vim-repeat'
   use 'tpope/vim-unimpaired'
+   use {'tpope/vim-speeddating'}
   use 'tpope/vim-fugitive' -- Git commands in nvim
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary' -- "gc" to comment visual regions/lines
@@ -37,13 +48,13 @@ require('packer').startup(function()
   use 'liuchengxu/vista.vim'
   -- UI to select things (files, grep results, open buffers...)
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
-  use {
-  "nvim-telescope/telescope-frecency.nvim",
-	  config = function()
-	    require"telescope".load_extension("frecency")
-	  end,
-     requires = {"tami5/sqlite.lua"}
-  }
+  -- use {
+  -- "nvim-telescope/telescope-frecency.nvim",
+	  -- config = function()
+	    -- require"telescope".load_extension("frecency")
+	  -- end,
+  --    requires = {"tami5/sqlite.lua"}
+  -- }
   use 'pgdouyon/vim-yin-yang'
   -- If you are using Packer
   use 'ishan9299/modus-theme-vim'
@@ -54,6 +65,10 @@ require('packer').startup(function()
     -- In Vim, compat mode is turned on as Lush only works in Neovim.
     requires = "rktjmp/lush.nvim"
     }
+    use {
+    "nanozuki/tabby.nvim",
+    config = function() require("tabby").setup() end,
+     }
   use 'folke/lsp-colors.nvim'
   use 'mg979/vim-visual-multi'
   use 'norcalli/nvim-colorizer.lua'
@@ -68,16 +83,6 @@ require('packer').startup(function()
   end
   }
   use {
-  "folke/twilight.nvim",
-  config = function()
-    require("twilight").setup {
-      -- your configuration comes here
-      -- or leave it empty to use the default settings
-      -- refer to the configuration section below
-    }
-  end
-}
-  use {
   "folke/zen-mode.nvim",
   config = function()
     require("zen-mode").setup {
@@ -88,14 +93,16 @@ require('packer').startup(function()
   end
   }
   use {
-  "folke/which-key.nvim",
+  "zeertzjq/which-key.nvim",
   config = function()
     require("which-key").setup {
       -- your configuration comes here
       -- or leave it empty to use the default settings
       -- refer to the configuration section below
     }
-  end }
+  end,
+    branch = "patch-1",
+  }
    use {
     "blackCauldron7/surround.nvim",
     config = function()
@@ -201,6 +208,7 @@ vim.o.hlsearch = false
 vim.wo.number = true
 vim.wo.relativenumber = true
 
+
 --Enable mouse mode
 -- vim.o.mouse = 'a'
 
@@ -217,6 +225,10 @@ vim.o.smartcase = true
 --Decrease update time
 vim.o.updatetime = 520
 vim.wo.signcolumn = 'yes'
+vim.o.cursorline = false
+vim.o.cursorcolumn = false
+vim.o.scrolljump = 5
+vim.o.showtabline = 2
 
 --Set colorscheme (order is important here)
 vim.o.termguicolors = true
@@ -316,6 +328,12 @@ vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>Vista!!<CR>]], { noremap = tru
 
 vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
 
+vim.api.nvim_set_keymap('n', '<leader>wtn', ':tabnew<CR>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>wtk', ':tabnext<CR>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>wTAB', ':tabnext<CR>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>wtj', ':tabprev<CR>', { noremap = true })
+vim.api.nvim_set_keymap('n', '<leader>wto', ':tabo<CR>', { noremap = true })
+
 vim.cmd [[
 nnoremap <leader>bd :bd<cr>
 nnoremap <leader>; <cmd>Telescope commands theme=dropdown<cr>
@@ -375,6 +393,9 @@ require"lsp-colors".setup {}
 -- Treesitter configuration
 -- Parsers must be installed manually via :TSInstall
 require('nvim-treesitter.configs').setup {
+    context_commentstring = {
+    enable = true
+  },
   highlight = {
     enable = true, -- false will disable the whole extension
   },
@@ -460,10 +481,6 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 local lsp_installer = require("nvim-lsp-installer")
-local runtime_path = vim.split(package.path, ';')
-table.insert(runtime_path, 'lua/?.lua')
-table.insert(runtime_path, 'lua/?/init.lua')
-
 
 -- Register a handler that will be called for all installed servers.
 -- Alternatively, you may also register handlers on specific server instances instead (see example below).
@@ -615,6 +632,39 @@ vim.g.neoterm_default_mod='belowright' -- open terminal in bottom split
 vim.g.neoterm_size=16 -- terminal split size
 vim.g.neoterm_autoscroll=1  --scroll to the bottom when running a command
 
+require("toggleterm").setup({})
+
+local Terminal  = require('toggleterm.terminal').Terminal
+local lazygit = Terminal:new({
+	cmd = "lazygit",
+	direction = "float",
+	hidden = true,
+	on_open = function(term)
+	  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", {noremap = true, silent = true})
+	end,
+
+})
+local lazydocker = Terminal:new({
+	cmd = "lazydocker",
+	direction = "float",
+	hidden = true,
+	on_open = function(term)
+	  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", {noremap = true, silent = true})
+	end,
+})
+
+
+function _lazydocker_toggle()
+  lazydocker:toggle()
+end
+
+function _lazygit_toggle()
+  lazygit:toggle()
+end
+
+vim.api.nvim_set_keymap("n", "<leader>gg", "<cmd>lua _lazygit_toggle()<CR>", {noremap = true, silent = true})
+vim.api.nvim_set_keymap("n", "<leader>od", "<cmd>lua _lazydocker_toggle()<CR>", {noremap = true, silent = true})
+
 vim.cmd[[
   tnoremap jj <C-\><C-n>
   :au BufEnter * if &buftype == 'terminal' | :startinsert | endif
@@ -630,8 +680,31 @@ au FileType help wincmd L
 ]]
 
 -- Autoformat
--- vim.cmd [[
--- au BufWrite * :Autoformat
--- ]]
+local null_ls = require("null-ls")
+
+-- register any number of sources simultaneously
+local sources = {
+	null_ls.builtins.formatting.trim_whitespace,
+null_ls.builtins.formatting.trim_newlines,
+	null_ls.builtins.diagnostics.hadolint,
+	null_ls.builtins.diagnostics.editorconfig_checker,
+    null_ls.builtins.formatting.codespell,
+    null_ls.builtins.formatting.prettierd,
+    null_ls.builtins.formatting.prismaFmt,
+    null_ls.builtins.formatting.eslint,
+    null_ls.builtins.formatting.cmake_format,
+    null_ls.builtins.formatting.black,
+    null_ls.builtins.diagnostics.write_good,
+    null_ls.builtins.code_actions.gitsigns,
+}
+
+null_ls.setup({
+    on_attach = function(client)
+        if client.resolved_capabilities.document_formatting then
+            vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()")
+        end
+    end,
+	sources = sources })
+
 -- Tags
 vim.g.vista_default_executive = 'nvim_lsp'
