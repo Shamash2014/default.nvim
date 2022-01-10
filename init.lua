@@ -372,6 +372,7 @@ nnoremap gs<leader> <cmd>HopChar1<cr>
 local neogit = require("neogit")
 
 neogit.setup {
+  use_magit_keybindings = true,
   integrations = {
     -- Neogit only provides inline diffs. If you want a more traditional way to look at diffs, you can use `sindrets/diffview.nvim`.
     -- The diffview integration enables the diff popup, which is a wrapper around `sindrets/diffview.nvim`.
@@ -636,19 +637,23 @@ require("toggleterm").setup({})
 
 local Terminal  = require('toggleterm.terminal').Terminal
 local lazygit = Terminal:new({
+	dir="git_dir",
 	cmd = "lazygit",
 	direction = "float",
 	hidden = true,
-	on_open = function(term)
-	  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", {noremap = true, silent = true})
-	end,
+	-- on_open = function(term)
+	--   vim.cmd("startinsert!")
+	--   vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", {noremap = true, silent = true})
+	-- end,
 
 })
 local lazydocker = Terminal:new({
 	cmd = "lazydocker",
+	dir="git_dir",
 	direction = "float",
 	hidden = true,
 	on_open = function(term)
+	  vim.cmd("startinsert!")
 	  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", {noremap = true, silent = true})
 	end,
 })
