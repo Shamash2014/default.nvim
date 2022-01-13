@@ -15,6 +15,7 @@ vim.cmd [[
 local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim' -- Package manager
+  use 'tommcdo/vim-exchange'
   use {'nathom/filetype.nvim'}
   use 'gpanders/editorconfig.nvim'
   use {"akinsho/toggleterm.nvim"}
@@ -34,6 +35,14 @@ require('packer').startup(function()
   }
   use 'JoosepAlviste/nvim-ts-context-commentstring'
   use 'Yggdroot/indentLine'
+  use {
+	"SmiteshP/nvim-gps",
+	config = function()
+		require("nvim-gps").setup({})
+
+	end,
+	requires = "nvim-treesitter/nvim-treesitter"
+    }
     use {'mattn/emmet-vim'}
   use 'chip/vim-fat-finger'
   use 'tpope/vim-eunuch'
@@ -214,6 +223,7 @@ vim.wo.relativenumber = true
 
 --Enable break indent
 vim.o.breakindent = true
+vim.o.hidden = true
 
 --Save undo history
 vim.opt.undofile = true
@@ -323,7 +333,7 @@ vim.api.nvim_set_keymap('n', '<leader>ss', [[<cmd>lua require('telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>h', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>ct', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>*', [[<cmd>lua require('telescope.builtin').grep_string(require('telescope.themes').get_dropdown({ previewer = false, search = vim.fn.expand("<cword>")}))<CR>]], { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader>sp', [[<cmd>lua require('telescope.builtin').live_grep(require('telescope.themes').get_dropdown({ previewer = false, cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1] }))<CR>]], { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>ps', [[<cmd>lua require('telescope.builtin').live_grep(require('telescope.themes').get_dropdown({ previewer = false,  search = vim.fn.expand("<cword>"), cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1] }))<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>Vista!!<CR>]], { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
@@ -613,12 +623,6 @@ cmp.setup {
   },
 }
 
-vim.cmd[[
-set foldlevel=99
-set foldmethod=expr
-set foldexpr=nvim_treesitter#foldexpr()
-]]
-
 -- global mark I for last edit
 vim.cmd [[autocmd InsertLeave * execute 'normal! mI']]
 
@@ -710,6 +714,12 @@ null_ls.setup({
         end
     end,
 	sources = sources })
+
+vim.cmd[[
+set foldlevel=99
+set foldmethod=expr
+set foldexpr=nvim_treesitter#foldexpr()
+]]
 
 -- Tags
 vim.g.vista_default_executive = 'nvim_lsp'
