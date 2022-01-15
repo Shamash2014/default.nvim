@@ -79,6 +79,7 @@ require('packer').startup(function()
     config = function() require("tabby").setup() end,
      }
   use 'folke/lsp-colors.nvim'
+  use 'ray-x/lsp_signature.nvim'
   use 'mg979/vim-visual-multi'
   use 'norcalli/nvim-colorizer.lua'
   use {
@@ -468,6 +469,7 @@ require('nvim-treesitter.configs').setup {
 local lspconfig = require 'lspconfig'
 require("grammar-guard").init()
 local on_attach = function(_, bufnr)
+  require "lsp_signature".on_attach()
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   local opts = { noremap = true, silent = true }
