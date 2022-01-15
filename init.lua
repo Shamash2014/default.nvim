@@ -120,14 +120,14 @@ require('packer').startup(function()
   }
 
   use 'ggandor/lightspeed.nvim'
-  use {
-  'phaazon/hop.nvim',
-  branch = 'v1', -- optional but strongly recommended
-  config = function()
-    -- you can configure Hop the way you like here; see :h hop-config
-    require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
-  end
-  }
+  -- use {
+  -- 'phaazon/hop.nvim',
+  -- branch = 'v1', -- optional but strongly recommended
+  -- config = function()
+  --   -- you can configure Hop the way you like here; see :h hop-config
+  --   require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
+  -- end
+  -- }
 
   use {
   "folke/trouble.nvim",
@@ -334,6 +334,10 @@ vim.api.nvim_set_keymap('n', '<leader>h', [[<cmd>lua require('telescope.builtin'
 vim.api.nvim_set_keymap('n', '<leader>ct', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>*', [[<cmd>lua require('telescope.builtin').grep_string(require('telescope.themes').get_dropdown({ previewer = false, search = vim.fn.expand("<cword>")}))<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>ps', [[<cmd>lua require('telescope.builtin').live_grep(require('telescope.themes').get_dropdown({ previewer = false,  search = vim.fn.expand("<cword>"), cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1] }))<CR>]], { noremap = true, silent = true })
+
+vim.api.nvim_set_keymap('n', '<leader>gl', [[<cmd>lua require('telescope.builtin').git_branches(require('telescope.themes').get_dropdown({ previewer = false,  search = vim.fn.expand("<cword>"), cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1] }))<CR>]], { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>gz', [[<cmd>lua require('telescope.builtin').git_stash(require('telescope.themes').get_dropdown({ previewer = false,  search = vim.fn.expand("<cword>"), cwd = vim.fn.systemlist("git rev-parse --show-toplevel")[1] }))<CR>]], { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>oc', [[<cmd>lua require('telescope.builtin').command_history(require('telescope.themes').get_dropdown({ previewer = false }))<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>so', [[<cmd>Vista!!<CR>]], { noremap = true, silent = true })
 
 vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<CR>]], { noremap = true, silent = true })
@@ -375,8 +379,8 @@ nnoremap <leader>cx <cmd>TroubleToggle<cr>
 nnoremap <leader>cs <cmd>Vista<cr>
 nnoremap <leader>fp :e $MYVIMRC<cr>
 nnoremap <leader>tz <cmd>ZenMode<cr>
-nnoremap gs<leader>p <cmd>HopPattern<cr>
-nnoremap gs<leader> <cmd>HopChar1<cr>
+" nnoremap gs<leader>p <cmd>HopPattern<cr>
+" nnoremap gs<leader> <cmd>HopChar1<cr>
 ]]
 
 local neogit = require("neogit")
