@@ -20,6 +20,7 @@ require('packer').startup(function()
   use 'gpanders/editorconfig.nvim'
   use {"akinsho/toggleterm.nvim"}
   use 'jose-elias-alvarez/null-ls.nvim'
+
   use {
       "mbbill/undotree",
       config = function()
@@ -44,6 +45,7 @@ require('packer').startup(function()
 	requires = "nvim-treesitter/nvim-treesitter"
     }
     use {'mattn/emmet-vim'}
+  use  {'hoschi/yode-nvim'}
   use 'chip/vim-fat-finger'
   use 'tpope/vim-eunuch'
   use 'tpope/vim-repeat'
@@ -51,6 +53,7 @@ require('packer').startup(function()
    use {'tpope/vim-speeddating'}
   use 'tpope/vim-fugitive' -- Git commands in nvim
   use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
+  use 'rhysd/conflict-marker.vim'
   use 'tpope/vim-commentary' -- "gc" to comment visual regions/lines
   -- use 'ludovicchabant/vim-gutentags'
   -- Automatic tags management
@@ -120,6 +123,10 @@ require('packer').startup(function()
     end
   }
 
+  --  Database
+  use { 'tpope/vim-dadbod' }
+  use { 'kristijanhusak/vim-dadbod-ui' }
+
   use 'ggandor/lightspeed.nvim'
   -- use {
   -- 'phaazon/hop.nvim',
@@ -158,6 +165,7 @@ require('packer').startup(function()
   }
   -- Highlight, edit, and navigate code using a fast incremental parsing library
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
+  use { 'nvim-treesitter/nvim-treesitter-refactor' }
 
   use {'p00f/nvim-ts-rainbow', after = 'nvim-treesitter'}
   use {'windwp/nvim-ts-autotag', after = 'nvim-treesitter'}
@@ -177,9 +185,9 @@ require('packer').startup(function()
     }
   }
   -- Debugging
-  use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
-use {'nvim-telescope/telescope-dap.nvim'}
-use {'mfussenegger/nvim-dap-python'}
+    use { "rcarriga/nvim-dap-ui", requires = {"mfussenegger/nvim-dap"} }
+    use {'nvim-telescope/telescope-dap.nvim'}
+    use {'mfussenegger/nvim-dap-python'}
     use 'theHamsta/nvim-dap-virtual-text'
     use "Pocco81/DAPInstall.nvim"
     use { "rcarriga/vim-ultest", requires = {"vim-test/vim-test"}, run = ":UpdateRemotePlugins" }
@@ -208,6 +216,7 @@ use {'mfussenegger/nvim-dap-python'}
   use 'kassio/neoterm'
 end)
 
+vim.cmd [[ set clipboard+=unnamedplus ]]
 vim.cmd [[ set linebreak breakindent ]]
 vim.opt.syntax = "enable"
 vim.g['rooter_cd_cmd'] = 'lcd'
@@ -329,7 +338,7 @@ end
 
 --Add leader shortcuts
 vim.api.nvim_set_keymap('n', '<leader>bb', [[<cmd>lua require('telescope.builtin').buffers(require('telescope.themes').get_dropdown({ previewer = false}))<CR>]], { noremap = true, silent = true })
-vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua project_files(require('telescope.themes').get_dropdown({ previewer = false}))<CR>]], { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader><space>', [[<cmd>lua project_files(require('telescope.themes').get_dropdown({ previewer = false, winblend=7, width = 1}))<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>ss', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({ previewer = false}))<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>h', [[<cmd>lua require('telescope.builtin').help_tags()<CR>]], { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>ct', [[<cmd>lua require('telescope.builtin').tags()<CR>]], { noremap = true, silent = true })
@@ -386,6 +395,15 @@ nnoremap <leader>tz <cmd>ZenMode<cr>
 " nnoremap gs<leader> <cmd>HopChar1<cr>
 ]]
 
+vim.cmd[[
+
+nnoremap <silent> <leader>odu :DBUIToggle<CR>
+nnoremap <silent> <leader>odf :DBUIFindBuffer<CR>
+nnoremap <silent> <leader>odr :DBUIRenameBuffer<CR>
+nnoremap <silent> <leader>odl :DBUILastQueryInfo<CR>
+
+]]
+
 local neogit = require("neogit")
 
 neogit.setup {
@@ -406,6 +424,17 @@ neogit.setup {
     diffview = true
   },
 }
+
+require('yode-nvim').setup({})
+
+vim.cmd [[
+map <Leader>yr :YodeCreateSeditorReplace<CR>
+map <Leader>yc :YodeCreateSeditorFloating<CR>
+map <Leader>ym :YodeFloatToMainWindow<CR>
+map <Leader>yf :YodeCloneCurrentIntoFloat<CR>
+map <Leader>bd :YodeBufferDelete<cr>
+imap <Leader>bd <esc>:YodeBufferDelete<cr>
+]]
 
 require"lsp-colors".setup {}
 -- Treesitter configuration
