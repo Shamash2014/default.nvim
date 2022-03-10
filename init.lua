@@ -20,6 +20,7 @@ require('packer').startup(function()
   use 'gpanders/editorconfig.nvim'
   use {"akinsho/toggleterm.nvim"}
   use 'jose-elias-alvarez/null-ls.nvim'
+  use  'mfussenegger/nvim-lint'
 
   use {
       "mbbill/undotree",
@@ -81,6 +82,13 @@ require('packer').startup(function()
     "nanozuki/tabby.nvim",
     config = function() require("tabby").setup() end,
      }
+     use {
+  "narutoxy/dim.lua",
+  requires = { "nvim-treesitter/nvim-treesitter", "neovim/nvim-lspconfig" },
+  config = function()
+    require('dim').setup()
+  end
+}
   use 'folke/lsp-colors.nvim'
   use 'ray-x/lsp_signature.nvim'
   use 'mg979/vim-visual-multi'
@@ -218,7 +226,6 @@ end)
 
 vim.cmd [[ set clipboard+=unnamedplus ]]
 vim.cmd [[ set linebreak breakindent ]]
-vim.opt.syntax = "enable"
 vim.g['rooter_cd_cmd'] = 'lcd'
 --Set highlight on search
 vim.o.hlsearch = false
@@ -252,8 +259,10 @@ vim.o.showtabline = 2
 
 --Set colorscheme (order is important here)
 vim.o.termguicolors = true
+ -- colorscheme zenbones
 vim.cmd [[
 set background=light
+syntax off
 colorscheme zenbones
 
 hi clear CursorLineNr
@@ -731,26 +740,28 @@ local null_ls = require("null-ls")
 -- register any number of sources simultaneously
 local sources = {
 	null_ls.builtins.formatting.trim_whitespace,
-null_ls.builtins.formatting.trim_newlines,
-	null_ls.builtins.diagnostics.hadolint,
+	null_ls.builtins.formatting.trim_newlines,
 	null_ls.builtins.diagnostics.editorconfig_checker,
-    null_ls.builtins.formatting.codespell,
-    null_ls.builtins.formatting.prettierd,
-    null_ls.builtins.formatting.prismaFmt,
-    null_ls.builtins.formatting.eslint,
-    null_ls.builtins.formatting.cmake_format,
-    null_ls.builtins.formatting.black,
-    null_ls.builtins.diagnostics.write_good,
-    null_ls.builtins.code_actions.gitsigns,
+	null_ls.builtins.formatting.codespell,
+	null_ls.builtins.formatting.prettierd,
+	null_ls.builtins.formatting.prismaFmt,
+	null_ls.builtins.formatting.eslint,
+	null_ls.builtins.formatting.cmake_format,
+	null_ls.builtins.formatting.black,
+	null_ls.builtins.code_actions.gitsigns,
 }
 
 null_ls.setup({
     on_attach = function(client)
         if client.resolved_capabilities.document_formatting then
-            vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()")
+            -- vim.cmd("autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()")
         end
     end,
 	sources = sources })
+
+vim.cmd [[
+au BufWritePost <buffer> lua require('lint').try_lint()
+]]
 
 vim.cmd[[
 set foldlevel=99
