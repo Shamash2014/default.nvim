@@ -114,7 +114,7 @@ require('packer').startup(function()
   end
   }
   use {
-  "zeertzjq/which-key.nvim",
+  "folke/which-key.nvim",
   config = function()
     require("which-key").setup {
       -- your configuration comes here
@@ -122,14 +122,14 @@ require('packer').startup(function()
       -- refer to the configuration section below
     }
   end,
-    branch = "patch-1",
+    -- branch = "patch-1",
   }
-   use {
-    "blackCauldron7/surround.nvim",
-    config = function()
-      require"surround".setup {mappings_style = "surround"}
-    end
-  }
+use {
+  "ur4ltz/surround.nvim",
+  config = function()
+    require"surround".setup {mappings_style = "surround"}
+  end
+}
 
   --  Database
   use { 'tpope/vim-dadbod' }
@@ -168,8 +168,8 @@ require('packer').startup(function()
   -- Add git related info in the signs columns and popups
   use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
   use { 'TimUntersberger/neogit', requires = {
-	  'nvim-lua/plenary.nvim',
-         'sindrets/diffview.nvim' }
+	'nvim-lua/plenary.nvim',
+        'sindrets/diffview.nvim' }
   }
   -- Highlight, edit, and navigate code using a fast incremental parsing library
   use {'nvim-treesitter/nvim-treesitter', run = ':TSUpdate'}
@@ -222,6 +222,15 @@ require('packer').startup(function()
   use "b0o/schemastore.nvim"
   -- Terminals
   use 'kassio/neoterm'
+
+  --  Jupiter
+	use 'untitled-ai/jupyter_ascending.vim'
+	use 'bfredl/nvim-ipy'
+	use 'hkupty/iron.nvim'
+	use 'GCBallesteros/jupytext.vim'
+	use 'kana/vim-textobj-line'
+	use 'kana/vim-textobj-user'
+	use 'GCBallesteros/vim-textobj-hydrogen'
 end)
 
 vim.cmd [[ set clipboard+=unnamedplus ]]
@@ -262,7 +271,7 @@ vim.o.termguicolors = true
  -- colorscheme zenbones
 vim.cmd [[
 set background=light
-syntax off
+syntax on
 colorscheme zenbones
 
 hi clear CursorLineNr
@@ -404,6 +413,25 @@ nnoremap <leader>tz <cmd>ZenMode<cr>
 " nnoremap gs<leader> <cmd>HopChar1<cr>
 ]]
 
+vim.g.nvim_ipy_perform_mappings = 0
+vim.g.ipy_celldef = '# %%'
+
+local iron = require('iron')
+
+iron.core.add_repl_definitions {
+  python = {
+    venv_python = {
+      command =  "poetry run ipython"
+    }
+  }
+}
+
+iron.core.set_config {
+  preferred = {
+    python = "venv_python",
+  }
+}
+
 vim.cmd[[
 
 nnoremap <silent> <leader>odu :DBUIToggle<CR>
@@ -411,7 +439,16 @@ nnoremap <silent> <leader>odf :DBUIFindBuffer<CR>
 nnoremap <silent> <leader>odr :DBUIRenameBuffer<CR>
 nnoremap <silent> <leader>odl :DBUILastQueryInfo<CR>
 
+nnoremap <silent><leader>ors <Plug>(iron-visual-send)
+nnoremap <silend><leader>orl <Plug>(iron-send-line)
+
+map <silent><leader>oiy <Plug>(IPy-Run)
+map <leader>rc <Plug>(IPy-RunCell)
 ]]
+
+vim.cmd [[nmap ]x ctrih/^# %%<CR><CR>]]
+vim.cmd [[nmap [x ctrah/^# %%<CR><CR>]]
+
 
 local neogit = require("neogit")
 
@@ -745,7 +782,7 @@ local sources = {
 	null_ls.builtins.formatting.codespell,
 	null_ls.builtins.formatting.prettierd,
 	null_ls.builtins.formatting.prismaFmt,
-	null_ls.builtins.formatting.eslint,
+	-- null_ls.builtins.formatting.eslint,
 	null_ls.builtins.formatting.cmake_format,
 	null_ls.builtins.formatting.black,
 	null_ls.builtins.code_actions.gitsigns,
@@ -759,9 +796,9 @@ null_ls.setup({
     end,
 	sources = sources })
 
-vim.cmd [[
-au BufWritePost <buffer> lua require('lint').try_lint()
-]]
+-- vim.cmd [[
+-- au BufWritePost <buffer> lua require('lint').try_lint()
+-- ]]
 
 vim.cmd[[
 set foldlevel=99
